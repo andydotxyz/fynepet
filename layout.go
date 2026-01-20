@@ -4,6 +4,8 @@ import (
 	"fyne.io/fyne/v2"
 )
 
+var petMinSize = fyne.NewSize(340, 440)
+
 type buttonLayout struct{}
 
 func (l buttonLayout) Layout(objects []fyne.CanvasObject, s fyne.Size) {
@@ -24,7 +26,33 @@ func (l buttonLayout) Layout(objects []fyne.CanvasObject, s fyne.Size) {
 }
 
 func (l buttonLayout) MinSize(_ []fyne.CanvasObject) fyne.Size {
-	return fyne.NewSize(340, 440)
+	return petMinSize
+}
+
+type fullLayout struct{}
+
+func (l fullLayout) Layout(objects []fyne.CanvasObject, s fyne.Size) {
+	ratio := petMinSize.Width / petMinSize.Height
+	winRatio := s.Width / s.Height
+
+	offset := fyne.Position{}
+	inner := s
+	if ratio <= winRatio {
+		inner.Width = s.Height * ratio
+		offset.X = (s.Width - inner.Width) / 2
+	} else if ratio >= winRatio {
+		inner.Height = s.Width / ratio
+		offset.Y = (s.Height - inner.Height) / 2
+	}
+
+	for _, o := range objects {
+		o.Resize(inner)
+		o.Move(offset)
+	}
+}
+
+func (l fullLayout) MinSize(_ []fyne.CanvasObject) fyne.Size {
+	return petMinSize
 }
 
 type screenLayout struct{}

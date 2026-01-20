@@ -38,7 +38,7 @@ func main() {
 	})
 
 	t.ScaleMode = canvas.ImageScalePixels
-	w.SetContent(container.NewStack(bg, container.New(&screenLayout{}, t), egg,
+	w.SetContent(container.New(&fullLayout{}, bg, container.New(&screenLayout{}, t), egg,
 		container.New(&buttonLayout{}, b1, b2, b3)))
 
 	go func() {
@@ -62,6 +62,5 @@ func main() {
 
 	w.SetPadded(false)
 	w.Resize(fyne.NewSize(680/2, 880/2))
-	w.SetFixedSize(true)
 	w.ShowAndRun()
 }
