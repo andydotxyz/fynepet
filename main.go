@@ -18,6 +18,11 @@ var (
 	imageBackground []byte
 	//go:embed "egg.png"
 	imageEgg []byte
+
+	//go:embed "Icon.png"
+	iconDark []byte
+	//go:embed "Icon-light.png"
+	iconLight []byte
 )
 
 func main() {
@@ -65,10 +70,30 @@ func main() {
 	})
 
 	scr.ScaleMode = canvas.ImageScalePixels
-	w.SetContent(container.New(&fullLayout{}, bg,
-		container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, modes...)...),
-		egg,
-		container.New(&buttonLayout{}, b1, b2, b3)))
+	under := canvas.NewImageFromReader(bytes.NewReader(iconDark), "Icon.png")
+	under.FillMode = canvas.ImageFillCover
+	under.Translucency = .8
+	if a.Settings().ThemeVariant() == theme.VariantLight {
+		under.Resource = fyne.NewStaticResource("IconLight.png", iconLight)
+		under.Translucency = .5
+	}
+
+	a.Settings().AddListener(func(s fyne.Settings) {
+		switch s.ThemeVariant() {
+		case theme.VariantLight:
+			under.Resource = fyne.NewStaticResource("IconLight.png", iconLight)
+			under.Translucency = .5
+		default:
+			under.Resource = fyne.NewStaticResource("Icon.png", iconDark)
+			under.Translucency = .8
+		}
+		under.Refresh()
+	})
+	w.SetContent(container.NewStack(under,
+		container.New(&fullLayout{}, bg,
+			container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, modes...)...),
+			egg,
+			container.New(&buttonLayout{}, b1, b2, b3))))
 
 	go func() {
 		i := 0
