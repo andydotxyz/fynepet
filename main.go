@@ -44,12 +44,12 @@ func main() {
 	go func() {
 		i := 0
 		for {
-			time.Sleep(time.Millisecond * 670)
+			time.Sleep(time.Second)
 
 			if i == 1 {
-				pix = frameEggDown
+				pix = sleepLight1
 			} else {
-				pix = frameEggUp
+				pix = sleepLight2
 			}
 			fyne.Do(t.Refresh)
 

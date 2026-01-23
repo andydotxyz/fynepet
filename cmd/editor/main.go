@@ -14,9 +14,9 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// outer frame [16]int{4294967295, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 4294967295}
-// crosshair [16]int{98304, 0, 0, 0, 0, 0, 0, 2147581953, 2147581953, 0, 0, 0, 0, 0, 0, 98304}
-var pix = [16]int{98304, 0, 0, 0, 0, 0, 0, 2147581953, 2147581953, 0, 0, 0, 0, 0, 0, 98304}
+// outer frame [16]int64{4294967295, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 4294967295}
+// crosshair [16]int64{98304, 0, 0, 0, 0, 0, 0, 2147581953, 2147581953, 0, 0, 0, 0, 0, 0, 98304}
+var pix = [16]int64{98304, 0, 0, 0, 0, 0, 0, 2147581953, 2147581953, 0, 0, 0, 0, 0, 0, 98304}
 
 func main() {
 	a := app.NewWithID("xyz.andy.fynepet.editor")
@@ -39,7 +39,7 @@ func main() {
 
 var img = image.NewNRGBA(image.Rect(0, 0, 32, 16))
 
-func draw(pix *[16]int) func(x, y int) image.Image {
+func draw(pix *[16]int64) func(x, y int) image.Image {
 	return func(_, _ int) image.Image {
 		var onOff color.Color
 
@@ -47,7 +47,7 @@ func draw(pix *[16]int) func(x, y int) image.Image {
 			for x := 0; x < 32; x++ {
 				onOff = color.Transparent
 
-				pow := int(math.Pow(2, float64(31-x)))
+				pow := int64(math.Pow(2, float64(31-x)))
 				if (*pix)[y]&pow == pow {
 					onOff = color.Black
 				}
@@ -70,7 +70,7 @@ func (t *tapper) Tapped(ev *fyne.PointEvent) {
 	x := int(ev.Position.X / cellW)
 	y := int(ev.Position.Y / cellH)
 
-	pow := int(math.Pow(2, float64(31-x)))
+	pow := int64(math.Pow(2, float64(31-x)))
 	pix[y] ^= pow
 	t.Refresh()
 }
