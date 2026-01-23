@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 )
 
 var (
@@ -25,10 +26,36 @@ func main() {
 
 	bg := canvas.NewImageFromReader(bytes.NewReader(imageBackground), "background.png")
 	egg := canvas.NewImageFromReader(bytes.NewReader(imageEgg), "egg.png")
-	t := canvas.NewRaster(draw(&pix))
+
+	p := &pet{}
+	scr := canvas.NewRaster(draw(&pix))
+	modes := []fyne.CanvasObject{
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
+	}
+	for _, m := range modes {
+		m.Hide()
+	}
 
 	b1 := newButton(func() {
-		log.Println("Tap A")
+		p.mode++
+		if p.mode == modeAlert {
+			p.mode = modeNone
+		}
+
+		for i, m := range modes {
+			if i == int(p.mode)-1 {
+				m.Show()
+				continue
+			}
+			m.Hide()
+		}
 	})
 	b2 := newButton(func() {
 		log.Println("Tap B")
@@ -37,8 +64,10 @@ func main() {
 		log.Println("Tap C")
 	})
 
-	t.ScaleMode = canvas.ImageScalePixels
-	w.SetContent(container.New(&fullLayout{}, bg, container.New(&screenLayout{}, t), egg,
+	scr.ScaleMode = canvas.ImageScalePixels
+	w.SetContent(container.New(&fullLayout{}, bg,
+		container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, modes...)...),
+		egg,
 		container.New(&buttonLayout{}, b1, b2, b3)))
 
 	go func() {
@@ -51,7 +80,7 @@ func main() {
 			} else {
 				pix = sleepLight2
 			}
-			fyne.Do(t.Refresh)
+			fyne.Do(scr.Refresh)
 
 			i++
 			if i > 1 {

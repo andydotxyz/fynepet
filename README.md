@@ -5,7 +5,10 @@ A Tamagotchi inspired pet built using the Fyne toolkit and Go programming langua
 ## TODO
 
 - [x] Egg animation
-- [ ] Implement all other states
+- [x] Button to cycle features
+- [ ] Notifications for attention
+- [ ] Implement interactions
+- [ ] Implement age and end of life
 - [ ] Storage of state and load that on start
 - [ ] Sounds
 

@@ -66,6 +66,24 @@ func (l screenLayout) Layout(objects []fyne.CanvasObject, s fyne.Size) {
 	screen.Resize(fyne.NewSize(screenMinSize.Width/petMinSize.Width*s.Width,
 		screenMinSize.Height/petMinSize.Height*s.Height))
 	screen.Move(fyne.NewPos(midWidth-s.Width*.2412, midHeight-s.Height*.1025))
+
+	iconWidth := s.Width / 9
+	iconSize := fyne.NewSquareSize(iconWidth)
+	iconTop := midHeight - s.Height*.192
+	spacing := s.Width / 9
+	iconLeft := screen.Position().X + spacing/9
+	rowOffset := float32(0)
+	for i, o := range objects {
+		if i == 0 {
+			continue
+		}
+
+		if i == 5 {
+			rowOffset = s.Height * .275
+		}
+		o.Move(fyne.NewPos(iconLeft+(float32((i-1)%4))*spacing, iconTop+rowOffset))
+		o.Resize(iconSize)
+	}
 }
 
 func (l screenLayout) MinSize(_ []fyne.CanvasObject) fyne.Size {
