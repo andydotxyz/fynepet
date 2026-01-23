@@ -11,9 +11,9 @@ const (
 	modeClean
 	modeStats
 	modeDiscipline
-	modeAlert
 )
 
 type pet struct {
-	mode petMode
+	mode  petMode
+	alert bool
 }

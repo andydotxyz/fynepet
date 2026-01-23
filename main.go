@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	_ "embed"
-	"log"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -14,9 +13,9 @@ import (
 )
 
 var (
-	//go:embed "background.png"
+	//go:embed "assets/background.png"
 	imageBackground []byte
-	//go:embed "egg.png"
+	//go:embed "assets/egg.png"
 	imageEgg []byte
 
 	//go:embed "Icon.png"
@@ -34,40 +33,7 @@ func main() {
 
 	p := &pet{}
 	scr := canvas.NewRaster(draw(&pix))
-	modes := []fyne.CanvasObject{
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-		canvas.NewImageFromResource(theme.NewColoredResource(theme.ViewFullScreenIcon(), theme.ColorNameBackground)),
-	}
-	for _, m := range modes {
-		m.Hide()
-	}
-
-	b1 := newButton(func() {
-		p.mode++
-		if p.mode == modeAlert {
-			p.mode = modeNone
-		}
-
-		for i, m := range modes {
-			if i == int(p.mode)-1 {
-				m.Show()
-				continue
-			}
-			m.Hide()
-		}
-	})
-	b2 := newButton(func() {
-		log.Println("Tap B")
-	})
-	b3 := newButton(func() {
-		log.Println("Tap C")
-	})
+	u := newUI(p)
 
 	scr.ScaleMode = canvas.ImageScalePixels
 	under := canvas.NewImageFromReader(bytes.NewReader(iconDark), "Icon.png")
@@ -91,9 +57,9 @@ func main() {
 	})
 	w.SetContent(container.NewStack(under,
 		container.New(&fullLayout{}, bg,
-			container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, modes...)...),
+			container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, u.modes...)...),
 			egg,
-			container.New(&buttonLayout{}, b1, b2, b3))))
+			container.New(&buttonLayout{}, u.b1, u.b2, u.b3))))
 
 	go func() {
 		i := 0
