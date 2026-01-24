@@ -66,7 +66,8 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 	}
 	u.b1 = newButton(func() {
 		if menuChoice > 0 {
-			if u.p.mode == modeLight {
+			switch u.p.mode {
+			case modeLight:
 				if menuChoice == 1 {
 					menuChoice = 2
 					pix = lightMenuOff
@@ -74,9 +75,23 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 					menuChoice = 1
 					pix = lightMenuOn
 				}
+			case modeStats:
+				if menuChoice == 1 {
+					menuChoice = 2
+					pix = statsMenuDiscipline
+				} else if menuChoice == 2 {
+					menuChoice = 3
+					pix = statsMenuHungry
+				} else if menuChoice == 3 {
+					menuChoice = 4
+					pix = statsMenuHappy
+				} else {
+					menuChoice = 1
+					pix = statsMenuHome
+				}
 
-				u.scr.Refresh()
 			}
+			u.scr.Refresh()
 
 			return
 		}
@@ -88,7 +103,8 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		u.refresh()
 	})
 	u.b2 = newButton(func() {
-		if u.p.mode == modeLight {
+		switch u.p.mode {
+		case modeLight:
 			if menuChoice > 0 {
 				u.p.dark = menuChoice != 1
 				if u.p.dark {
@@ -110,6 +126,15 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			}
 			u.scr.Refresh()
 			return
+		case modeStats:
+			if menuChoice > 0 {
+				u.b1.OnTapped()
+				return
+			}
+
+			pix = statsMenuHome
+			menuChoice = 1
+			u.scr.Refresh()
 		}
 		log.Println("Tap B")
 	})
