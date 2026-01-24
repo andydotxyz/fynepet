@@ -3,7 +3,7 @@ package main
 type petMode int
 
 const (
-	modeNone petMode = iota
+	modeHome petMode = iota
 	modeFeed
 	modeLight
 	modeGame
@@ -14,6 +14,7 @@ const (
 )
 
 type pet struct {
-	mode  petMode
-	alert bool
+	mode petMode
+
+	alert, dark bool
 }

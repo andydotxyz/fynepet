@@ -39,11 +39,12 @@ type ui struct {
 	b1, b2, b3 *button
 	modes      []fyne.CanvasObject
 
-	p *pet
+	p   *pet
+	scr *canvas.Raster
 }
 
-func newUI(p *pet) *ui {
-	u := &ui{p: p}
+func newUI(p *pet, s *canvas.Raster) *ui {
+	u := &ui{p: p, scr: s}
 	u.modes = []fyne.CanvasObject{
 		u.newIcon("feed", picFeed),
 		u.newIcon("light", picLight),
@@ -55,21 +56,72 @@ func newUI(p *pet) *ui {
 		u.newIcon("alert", picAlert),
 	}
 
+	menuChoice := 0
+	cancel := func() {
+		menuChoice = 0
+		u.p.mode = modeHome
+		pix = homePix
+		u.scr.Refresh()
+		u.refresh()
+	}
 	u.b1 = newButton(func() {
+		if menuChoice > 0 {
+			if u.p.mode == modeLight {
+				if menuChoice == 1 {
+					menuChoice = 2
+					pix = lightMenuOff
+				} else {
+					menuChoice = 1
+					pix = lightMenuOn
+				}
+
+				u.scr.Refresh()
+			}
+
+			return
+		}
 		p.mode++
 		if p.mode > modeDiscipline {
-			p.mode = modeNone
+			p.mode = modeHome
 		}
 
 		u.refresh()
 	})
 	u.b2 = newButton(func() {
+		if u.p.mode == modeLight {
+			if menuChoice > 0 {
+				u.p.dark = menuChoice != 1
+				if u.p.dark {
+					homePix = sleepDark1
+				} else {
+					homePix = sleepLight1 // TODO possibly not? kick home animation
+				}
+
+				cancel()
+				return
+			}
+
+			if u.p.dark {
+				pix = lightMenuOff
+				menuChoice = 2
+			} else {
+				pix = lightMenuOn
+				menuChoice = 1
+			}
+			u.scr.Refresh()
+			return
+		}
 		log.Println("Tap B")
 	})
 	u.b3 = newButton(func() {
-		u.p.mode = modeNone
-		u.refresh()
+		cancel()
 	})
+
+	if p.dark {
+		pix = sleepDark1
+	} else {
+		pix = sleepLight1
+	}
 	return u
 }
 

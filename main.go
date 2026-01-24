@@ -33,7 +33,7 @@ func main() {
 
 	p := &pet{}
 	scr := canvas.NewRaster(draw(&pix))
-	u := newUI(p)
+	u := newUI(p, scr)
 
 	scr.ScaleMode = canvas.ImageScalePixels
 	under := canvas.NewImageFromReader(bytes.NewReader(iconDark), "Icon.png")
@@ -66,17 +66,29 @@ func main() {
 		for {
 			time.Sleep(time.Second)
 
-			if i == 1 {
-				pix = sleepLight1
+			if p.dark {
+				if i == 1 {
+					homePix = sleepDark1
+				} else {
+					homePix = sleepDark2
+				}
 			} else {
-				pix = sleepLight2
+				if i == 1 {
+					homePix = sleepLight1
+				} else {
+					homePix = sleepLight2
+				}
 			}
-			fyne.Do(scr.Refresh)
-
 			i++
 			if i > 1 {
 				i = 0
 			}
+
+			if p.mode != modeHome {
+				continue
+			}
+			pix = homePix
+			fyne.Do(scr.Refresh)
 		}
 	}()
 
