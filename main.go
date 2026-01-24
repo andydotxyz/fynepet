@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	_ "embed"
+	"math/rand/v2"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -89,6 +90,21 @@ func main() {
 			}
 			pix = homePix
 			fyne.Do(scr.Refresh)
+		}
+	}()
+
+	go func() {
+		for { // TODO remove this for real lifecycle
+			delay := rand.IntN(15 * 60)
+			time.Sleep(time.Second * time.Duration(delay))
+
+			fyne.Do(func() {
+				if p.alert {
+					return
+				}
+
+				u.alert()
+			})
 		}
 	}()
 

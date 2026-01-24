@@ -161,6 +161,13 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			pix = statsMenuHome
 			menuChoice = 1
 			u.scr.Refresh()
+			return
+		case modeDiscipline: // TODO the real mode
+			if p.alert {
+				p.alert = false
+				cancel()
+			}
+			return
 		}
 		log.Println("TODO Tap B, mode", p.mode)
 	})
@@ -174,6 +181,13 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		pix = sleepLight1
 	}
 	return u
+}
+
+func (u *ui) alert() {
+	u.p.alert = true
+	u.refresh()
+
+	fyne.CurrentApp().SendNotification(fyne.NewNotification("Attention!", "Your pet needs you..."))
 }
 
 func (u *ui) newIcon(name string, data []byte) fyne.CanvasObject {
