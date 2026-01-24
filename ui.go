@@ -70,6 +70,14 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 	u.b1 = newButton(func() {
 		if menuChoice > 0 {
 			switch u.p.mode {
+			case modeFeed:
+				if menuChoice == 1 {
+					menuChoice = 2
+					pix = feedMenu2
+				} else {
+					menuChoice = 1
+					pix = feedMenu1
+				}
 			case modeLight:
 				if menuChoice == 1 {
 					menuChoice = 2
@@ -107,6 +115,21 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 	})
 	u.b2 = newButton(func() {
 		switch u.p.mode {
+		case modeFeed:
+			if menuChoice > 0 {
+				if menuChoice == 1 {
+					log.Println("TODO feed burger")
+				} else {
+					log.Println("TODO feed cake")
+				}
+
+				return
+			}
+
+			pix = feedMenu1
+			menuChoice = 1
+			u.scr.Refresh()
+			return
 		case modeLight:
 			if menuChoice > 0 {
 				u.p.dark = menuChoice != 1
@@ -139,7 +162,7 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			menuChoice = 1
 			u.scr.Refresh()
 		}
-		log.Println("Tap B")
+		log.Println("TODO Tap B, mode", p.mode)
 	})
 	u.b3 = newButton(func() {
 		cancel()
