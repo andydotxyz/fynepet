@@ -58,10 +58,13 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 
 	menuChoice := 0
 	cancel := func() {
-		menuChoice = 0
-		u.p.mode = modeHome
-		pix = homePix
-		u.scr.Refresh()
+		if menuChoice == 0 {
+			u.p.mode = modeHome
+		} else {
+			menuChoice = 0
+			pix = homePix
+			u.scr.Refresh()
+		}
 		u.refresh()
 	}
 	u.b1 = newButton(func() {
