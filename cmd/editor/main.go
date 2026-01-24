@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"image"
 	"image/color"
@@ -14,6 +15,9 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+//go:embed "invert-colors.svg"
+var invert []byte
+
 // outer frame [16]int64{4294967295, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 2147483649, 4294967295}
 // crosshair [16]int64{98304, 0, 0, 0, 0, 0, 0, 2147581953, 2147581953, 0, 0, 0, 0, 0, 0, 98304}
 var pix = [16]int64{98304, 0, 0, 0, 0, 0, 0, 2147581953, 2147581953, 0, 0, 0, 0, 0, 0, 98304}
@@ -23,12 +27,24 @@ func main() {
 	w := a.NewWindow("Fyne Pet Editor")
 
 	bg := canvas.NewRectangle(color.Gray{Y: 60})
+	t := &tapper{}
 	bar := widget.NewToolbar(
 		widget.NewToolbarAction(theme.ContentCopyIcon(), func() {
 			a.Clipboard().SetContent(fmt.Sprintf("%#v", pix))
-		}))
+		}),
+		widget.NewToolbarAction(theme.NewThemedResource(fyne.NewStaticResource("invert-colors.svg", invert)), func() {
+			for y := 0; y < 16; y++ {
+				for x := 0; x < 32; x++ {
 
-	t := &tapper{}
+					pow := int64(math.Pow(2, float64(31-x)))
+					pix[y] ^= pow
+				}
+			}
+
+			t.Refresh()
+		}),
+	)
+
 	t.ExtendBaseWidget(t)
 	w.SetContent(container.NewBorder(bar, nil, nil, nil,
 		container.NewStack(bg, t)))
