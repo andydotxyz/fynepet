@@ -3,6 +3,7 @@ package main
 import (
 	_ "embed"
 	"log"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -38,6 +39,7 @@ var (
 type ui struct {
 	b1, b2, b3 *button
 	modes      []fyne.CanvasObject
+	hold       bool
 
 	p   *pet
 	scr *canvas.Raster
@@ -58,6 +60,7 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 
 	menuChoice := 0
 	cancel := func() {
+		u.hold = false
 		if menuChoice == 0 {
 			u.p.mode = modeHome
 		} else {
@@ -129,7 +132,6 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			pix = feedMenu1
 			menuChoice = 1
 			u.scr.Refresh()
-			return
 		case modeLight:
 			if menuChoice > 0 {
 				u.p.dark = menuChoice != 1
@@ -151,7 +153,15 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 				menuChoice = 1
 			}
 			u.scr.Refresh()
-			return
+		case modeClean:
+			u.hold = true
+			go func() {
+				u.cleanAnimation()
+				u.p.dirty = false
+				u.p.alert = false
+				u.hold = false
+				u.refresh()
+			}()
 		case modeStats:
 			if menuChoice > 0 {
 				u.b1.OnTapped()
@@ -161,25 +171,21 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			pix = statsMenuHome
 			menuChoice = 1
 			u.scr.Refresh()
-			return
-		case modeDiscipline: // TODO the real mode
+		case modeDiscipline:
 			if p.alert {
 				p.alert = false
 				cancel()
 			}
 			return
 		}
-		log.Println("TODO Tap B, mode", p.mode)
+		if menuChoice != 0 {
+			u.hold = true
+		}
 	})
 	u.b3 = newButton(func() {
 		cancel()
 	})
 
-	if p.dark {
-		pix = sleepDark1
-	} else {
-		pix = sleepLight1
-	}
 	return u
 }
 
@@ -214,5 +220,51 @@ func (u *ui) refresh() {
 			continue
 		}
 		m.Hide()
+	}
+}
+
+func (u *ui) cleanAnimation() {
+	i := 0
+	for i < 36 {
+		time.Sleep(time.Millisecond * 50)
+
+		if i < 32 { // last 4 frames are a small freeze on the device
+			for id, row := range pix {
+				pix[id] = row << 1
+
+				switch i % 32 {
+				case 0:
+					if id%4 == 2 {
+						pix[id] |= 0x1
+					}
+				case 1:
+					if id%4 != 0 {
+						pix[id] |= 0x1
+					}
+				case 2:
+					if id%4 != 2 {
+						pix[id] |= 0x1
+					}
+				case 3:
+					if id%2 == 0 {
+						pix[id] |= 0x1
+					}
+				case 4:
+					if id%2 == 1 {
+						pix[id] |= 0x1
+					}
+				case 5:
+					if id%4 == 0 {
+						pix[id] |= 0x1
+					}
+
+				default:
+					// no more pixels
+				}
+			}
+		}
+		i++
+
+		fyne.Do(u.scr.Refresh)
 	}
 }

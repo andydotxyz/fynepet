@@ -103,7 +103,7 @@ func main() {
 				i = 0
 			}
 
-			if p.mode != modeHome {
+			if u.hold {
 				continue
 			}
 			pix = homePix
@@ -117,6 +117,7 @@ func main() {
 			time.Sleep(time.Second * time.Duration(delay))
 
 			fyne.Do(func() {
+				p.dirty = true
 				if p.alert {
 					return
 				}
