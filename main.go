@@ -66,20 +66,38 @@ func main() {
 		i := 0
 		for {
 			time.Sleep(time.Second)
-
-			if p.dark {
-				if i == 1 {
-					homePix = sleepDark1
+			if p.asleep {
+				if p.dark {
+					if i == 1 {
+						homePix = sleepDark1
+					} else {
+						homePix = sleepDark2
+					}
 				} else {
-					homePix = sleepDark2
+					if i == 1 {
+						homePix = sleepLight1
+					} else {
+						homePix = sleepLight2
+					}
 				}
 			} else {
 				if i == 1 {
-					homePix = sleepLight1
+					homePix = frameEggDown
 				} else {
-					homePix = sleepLight2
+					homePix = frameEggUp
 				}
 			}
+
+			if p.dirty {
+				for id, row := range homePix {
+					if i == 0 {
+						homePix[id] = row | waste1[id]
+					} else {
+						homePix[id] = row | waste2[id]
+					}
+				}
+			}
+
 			i++
 			if i > 1 {
 				i = 0

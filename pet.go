@@ -16,5 +16,5 @@ const (
 type pet struct {
 	mode petMode
 
-	alert, dark bool
+	alert, asleep, dark bool
 }
