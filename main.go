@@ -82,9 +82,9 @@ func main() {
 				}
 			} else {
 				if i == 1 {
-					homePix = frameEggDown
+					homePix = frameBaby1
 				} else {
-					homePix = frameEggUp
+					homePix = frameBaby2
 				}
 			}
 
