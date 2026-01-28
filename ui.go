@@ -135,10 +135,9 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		case modeLight:
 			if menuChoice > 0 {
 				u.p.dark = menuChoice != 1
-				if u.p.dark {
-					homePix = sleepDark1
-				} else {
-					homePix = sleepLight1 // TODO possibly not? kick home animation
+				if !u.p.dark {
+					pix = homePix
+					u.scr.Refresh()
 				}
 
 				cancel()

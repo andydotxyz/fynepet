@@ -66,19 +66,12 @@ func main() {
 		i := 0
 		for {
 			time.Sleep(time.Second)
+			p.asleep = time.Now().Hour() < 9 || time.Now().Hour() > 21
 			if p.asleep {
-				if p.dark {
-					if i == 1 {
-						homePix = sleepDark1
-					} else {
-						homePix = sleepDark2
-					}
+				if i == 1 {
+					homePix = sleepLight1
 				} else {
-					if i == 1 {
-						homePix = sleepLight1
-					} else {
-						homePix = sleepLight2
-					}
+					homePix = sleepLight2
 				}
 			} else {
 				if i == 1 {
@@ -106,7 +99,20 @@ func main() {
 			if u.hold {
 				continue
 			}
-			pix = homePix
+			if p.dark {
+				if p.asleep {
+					if i == 1 {
+						pix = sleepDark1
+					} else {
+						pix = sleepDark2
+					}
+				} else {
+					pix = frameBlack
+				}
+			} else {
+				pix = homePix
+			}
+
 			fyne.Do(scr.Refresh)
 		}
 	}()
