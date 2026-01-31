@@ -1,5 +1,9 @@
 package main
 
+import (
+	"fyne.io/fyne/v2"
+)
+
 type petMode int
 
 const (
@@ -15,6 +19,16 @@ const (
 
 type pet struct {
 	mode petMode
+	age  petAge
+
+	pref fyne.Preferences
 
 	alert, asleep, dark, dirty bool
+}
+
+func loadPet(pref fyne.Preferences) *pet {
+	p := &pet{pref: pref}
+	p.age = petAge(pref.Float(keyAge))
+
+	return p
 }

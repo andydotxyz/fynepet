@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	_ "embed"
-	"math/rand/v2"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -32,7 +31,7 @@ func main() {
 	bg := canvas.NewImageFromReader(bytes.NewReader(imageBackground), "background.png")
 	egg := canvas.NewImageFromReader(bytes.NewReader(imageEgg), "egg.png")
 
-	p := &pet{}
+	p := loadPet(a.Preferences())
 	scr := canvas.NewRaster(draw(&pix))
 	u := newUI(p, scr)
 
@@ -62,10 +61,10 @@ func main() {
 			egg,
 			container.New(&buttonLayout{}, u.b1, u.b2, u.b3))))
 
+	go p.runAging(u)
 	go func() {
 		i := 0
 		for {
-			time.Sleep(time.Second)
 			p.asleep = time.Now().Hour() < 9 || time.Now().Hour() > 21
 			if p.asleep {
 				if i == 1 {
@@ -75,9 +74,9 @@ func main() {
 				}
 			} else {
 				if i == 1 {
-					homePix = frameBaby1
+					homePix = ageFrame1
 				} else {
-					homePix = frameBaby2
+					homePix = ageFrame2
 				}
 			}
 
@@ -97,6 +96,7 @@ func main() {
 			}
 
 			if u.hold {
+				time.Sleep(time.Second)
 				continue
 			}
 			if p.dark {
@@ -114,22 +114,7 @@ func main() {
 			}
 
 			fyne.Do(scr.Refresh)
-		}
-	}()
-
-	go func() {
-		for { // TODO remove this for real lifecycle
-			delay := rand.IntN(15 * 60)
-			time.Sleep(time.Second * time.Duration(delay))
-
-			fyne.Do(func() {
-				p.dirty = true
-				if p.alert {
-					return
-				}
-
-				u.alert()
-			})
+			time.Sleep(time.Second)
 		}
 	}()
 

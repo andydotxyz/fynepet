@@ -71,6 +71,10 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		u.refresh()
 	}
 	u.b1 = newButton(func() {
+		if u.p.age < ageBaby {
+			return
+		}
+
 		if menuChoice > 0 {
 			switch u.p.mode {
 			case modeFeed:
@@ -117,6 +121,10 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		u.refresh()
 	})
 	u.b2 = newButton(func() {
+		if u.p.age < ageBaby {
+			return
+		}
+
 		switch u.p.mode {
 		case modeFeed:
 			if menuChoice > 0 {
@@ -182,6 +190,10 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		}
 	})
 	u.b3 = newButton(func() {
+		if u.p.age < ageBaby {
+			return
+		}
+
 		cancel()
 	})
 

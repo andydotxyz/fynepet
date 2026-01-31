@@ -35,8 +35,8 @@ var (
 	waste1 = [16]int64{0, 0, 0, 0, 0, 0, 0, 0, 1, 66, 129, 80, 24, 52, 122, 126}
 	waste2 = [16]int64{0, 0, 0, 0, 0, 0, 0, 0, 128, 66, 129, 18, 24, 52, 94, 126}
 
-	pix     = frameBaby1
-	homePix = frameBaby1
+	pix     = ageFrame1
+	homePix = ageFrame1
 	img     = image.NewNRGBA(image.Rect(0, 0, 32, 16))
 )
 
