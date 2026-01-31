@@ -70,7 +70,7 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		u.refresh()
 	}
 	u.b1 = newButton(func() {
-		if u.p.age < ageBaby {
+		if p.age < ageBaby || p.age >= ageDead {
 			return
 		}
 
@@ -120,7 +120,7 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		u.refresh()
 	})
 	u.b2 = newButton(func() {
-		if u.p.age < ageBaby {
+		if p.age < ageBaby || p.age >= ageDead {
 			return
 		}
 
@@ -189,7 +189,7 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 		}
 	})
 	u.b3 = newButton(func() {
-		if u.p.age < ageBaby {
+		if p.age < ageBaby || p.age >= ageDead {
 			return
 		}
 

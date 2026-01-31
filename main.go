@@ -34,6 +34,7 @@ func main() {
 	p := loadPet(a.Preferences())
 	scr := canvas.NewRaster(draw(&pix))
 	u := newUI(p, scr)
+	go p.runAging(u)
 
 	scr.ScaleMode = canvas.ImageScalePixels
 	under := canvas.NewImageFromReader(bytes.NewReader(iconDark), "Icon.png")
@@ -63,7 +64,6 @@ func main() {
 				container.New(&buttonLayout{}, u.b1, u.b2, u.b3),
 				lightThemeOverride{Theme: theme.DefaultTheme()}))))
 
-	go p.runAging(u)
 	go func() {
 		i := 0
 		for {

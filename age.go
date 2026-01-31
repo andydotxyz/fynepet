@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"math/rand/v2"
 	"time"
 
@@ -16,8 +17,9 @@ type petAge float64
 const (
 	ageEgg petAge = iota
 	ageBaby
+	ageDead petAge = 99
 
-	ageIota petAge = 0.001
+	ageIota petAge = 0.006
 )
 
 var (
@@ -27,8 +29,8 @@ var (
 
 func (p *pet) runAging(u *ui) {
 	if p.age < 1 {
-		p.tickUntil(ageIota * 6 * 5)
-		p.age++
+		p.tickUntil(ageIota * 5)
+		p.age = 1
 	}
 	ageFrame1 = frameBaby1
 	ageFrame2 = frameBaby2
@@ -37,6 +39,9 @@ func (p *pet) runAging(u *ui) {
 		for { // TODO remove this for real lifecycle
 			delay := rand.IntN(15 * 60)
 			time.Sleep(time.Second * time.Duration(delay))
+			if p.age < ageBaby || p.age >= ageDead {
+				continue
+			}
 
 			fyne.Do(func() {
 				p.dirty = true
@@ -49,7 +54,14 @@ func (p *pet) runAging(u *ui) {
 		}
 	}()
 
-	// TODO end of life
+	if p.age >= ageBaby && p.age < ageDead {
+		p.tickUntil(1.0 + ageIota*30)
+		p.age = ageDead // dead
+		p.pref.SetFloat(keyAge, float64(p.age))
+	}
+	ageFrame1 = frameDead1
+	ageFrame2 = frameDead2
+	// TODO dead stats page
 }
 
 func (p *pet) tickUntil(age petAge) {
@@ -57,8 +69,12 @@ func (p *pet) tickUntil(age petAge) {
 	if delta <= 0 {
 		return
 	}
+	for delta > 1 {
+		// more than a life stage difference
+		log.Println("Unsure how long until next generation")
+	}
 
-	durationDelta := time.Duration(delta/ageIota) * 10 * time.Second
+	durationDelta := time.Duration(delta/ageIota) * 60 * time.Second
 	p.tickFor(durationDelta)
 }
 
