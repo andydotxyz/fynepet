@@ -59,7 +59,9 @@ func main() {
 		container.New(&fullLayout{}, bg,
 			container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, u.modes...)...),
 			egg,
-			container.New(&buttonLayout{}, u.b1, u.b2, u.b3))))
+			container.NewThemeOverride(
+				container.New(&buttonLayout{}, u.b1, u.b2, u.b3),
+				lightThemeOverride{Theme: theme.DefaultTheme()}))))
 
 	go p.runAging(u)
 	go func() {

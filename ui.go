@@ -7,7 +7,6 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/theme"
 )
 
 var (
@@ -209,7 +208,8 @@ func (u *ui) alert() {
 
 func (u *ui) newIcon(name string, data []byte) fyne.CanvasObject {
 	res := fyne.NewStaticResource("pix"+name+".svg", data)
-	i := canvas.NewImageFromResource(theme.NewColoredResource(res, theme.ColorNameBackground))
+	i := canvas.NewImageFromResource(res)
+
 	if name != "alert" || !u.p.alert {
 		i.Hide()
 	}
