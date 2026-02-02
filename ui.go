@@ -6,6 +6,8 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
+
+	"github.com/andydotxyz/fynepet/pkg/fynepet"
 )
 
 var (
@@ -40,13 +42,13 @@ type ui struct {
 	hold       bool
 
 	p   *pet
-	scr *screen
+	scr *fynepet.Screen
 
 	homePix [16]int64
 }
 
 func newUI(p *pet) *ui {
-	u := &ui{p: p, scr: newScreen()}
+	u := &ui{p: p, scr: fynepet.NewScreen()}
 
 	u.modes = []fyne.CanvasObject{
 		u.newIcon("feed", picFeed),
@@ -66,7 +68,7 @@ func newUI(p *pet) *ui {
 			u.p.mode = modeHome
 		} else {
 			menuChoice = 0
-			u.scr.setPixels(u.homePix)
+			u.scr.SetPixels(u.homePix)
 		}
 		u.refresh()
 	}
@@ -80,32 +82,32 @@ func newUI(p *pet) *ui {
 			case modeFeed:
 				if menuChoice == 1 {
 					menuChoice = 2
-					u.scr.setPixels(feedMenu2)
+					u.scr.SetPixels(feedMenu2)
 				} else {
 					menuChoice = 1
-					u.scr.setPixels(feedMenu1)
+					u.scr.SetPixels(feedMenu1)
 				}
 			case modeLight:
 				if menuChoice == 1 {
 					menuChoice = 2
-					u.scr.setPixels(lightMenuOff)
+					u.scr.SetPixels(lightMenuOff)
 				} else {
 					menuChoice = 1
-					u.scr.setPixels(lightMenuOn)
+					u.scr.SetPixels(lightMenuOn)
 				}
 			case modeStats:
 				if menuChoice == 1 {
 					menuChoice = 2
-					u.scr.setPixels(statsMenuDiscipline)
+					u.scr.SetPixels(statsMenuDiscipline)
 				} else if menuChoice == 2 {
 					menuChoice = 3
-					u.scr.setPixels(statsMenuHungry)
+					u.scr.SetPixels(statsMenuHungry)
 				} else if menuChoice == 3 {
 					menuChoice = 4
-					u.scr.setPixels(statsMenuHappy)
+					u.scr.SetPixels(statsMenuHappy)
 				} else {
 					menuChoice = 1
-					u.scr.setPixels(statsMenuHome)
+					u.scr.SetPixels(statsMenuHome)
 				}
 
 			}
@@ -135,13 +137,13 @@ func newUI(p *pet) *ui {
 				return
 			}
 
-			u.scr.setPixels(feedMenu1)
+			u.scr.SetPixels(feedMenu1)
 			menuChoice = 1
 		case modeLight:
 			if menuChoice > 0 {
 				u.p.dark = menuChoice != 1
 				if !u.p.dark {
-					u.scr.setPixels(u.homePix)
+					u.scr.SetPixels(u.homePix)
 				}
 
 				cancel()
@@ -149,16 +151,16 @@ func newUI(p *pet) *ui {
 			}
 
 			if u.p.dark {
-				u.scr.setPixels(lightMenuOff)
+				u.scr.SetPixels(lightMenuOff)
 				menuChoice = 2
 			} else {
-				u.scr.setPixels(lightMenuOn)
+				u.scr.SetPixels(lightMenuOn)
 				menuChoice = 1
 			}
 		case modeClean:
 			u.hold = true
 			go func() {
-				u.scr.cleanAnimation()
+				u.cleanAnimation()
 				u.p.dirty = false
 				u.p.alert = false
 				u.hold = false
@@ -170,7 +172,7 @@ func newUI(p *pet) *ui {
 				return
 			}
 
-			u.scr.setPixels(statsMenuHome)
+			u.scr.SetPixels(statsMenuHome)
 			menuChoice = 1
 		case modeDiscipline:
 			if p.alert {

@@ -101,15 +101,15 @@ func main() {
 				if p.dark {
 					if p.asleep {
 						if i == 1 {
-							u.scr.setPixels(sleepDark1)
+							u.scr.SetPixels(sleepDark1)
 						} else {
-							u.scr.setPixels(sleepDark2)
+							u.scr.SetPixels(sleepDark2)
 						}
 					} else {
-						u.scr.setPixels(frameBlack)
+						u.scr.SetPixels(frameBlack)
 					}
 				} else {
-					u.scr.setPixels(u.homePix)
+					u.scr.SetPixels(u.homePix)
 				}
 			})
 			time.Sleep(time.Second)
