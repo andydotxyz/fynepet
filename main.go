@@ -32,11 +32,9 @@ func main() {
 	egg := canvas.NewImageFromReader(bytes.NewReader(imageEgg), "egg.png")
 
 	p := loadPet(a.Preferences())
-	scr := canvas.NewRaster(draw(&pix))
-	u := newUI(p, scr)
+	u := newUI(p)
 	go p.runAging(u)
 
-	scr.ScaleMode = canvas.ImageScalePixels
 	under := canvas.NewImageFromReader(bytes.NewReader(iconDark), "Icon.png")
 	under.FillMode = canvas.ImageFillCover
 	under.Translucency = .8
@@ -58,7 +56,7 @@ func main() {
 	})
 	w.SetContent(container.NewStack(under,
 		container.New(&fullLayout{}, bg,
-			container.New(&screenLayout{}, append([]fyne.CanvasObject{scr}, u.modes...)...),
+			container.New(&screenLayout{}, append([]fyne.CanvasObject{u.scr}, u.modes...)...),
 			egg,
 			container.NewThemeOverride(
 				container.New(&buttonLayout{}, u.b1, u.b2, u.b3),
@@ -68,25 +66,27 @@ func main() {
 		i := 0
 		for {
 			p.asleep = time.Now().Hour() < 9 || time.Now().Hour() > 21
-			if p.asleep {
-				if i == 1 {
-					homePix = sleepLight1
-				} else {
-					homePix = sleepLight2
-				}
-			} else {
-				homePix = ageFrames[int(p.age)][i]
-			}
-
-			if p.dirty {
-				for id, row := range homePix {
-					if i == 0 {
-						homePix[id] = row | waste1[id]
+			fyne.Do(func() {
+				if p.asleep {
+					if i == 1 {
+						u.homePix = sleepLight1
 					} else {
-						homePix[id] = row | waste2[id]
+						u.homePix = sleepLight2
+					}
+				} else {
+					u.homePix = ageFrames[int(p.age)][i]
+				}
+
+				if p.dirty {
+					for id, row := range u.homePix {
+						if i == 0 {
+							u.homePix[id] = row | waste1[id]
+						} else {
+							u.homePix[id] = row | waste2[id]
+						}
 					}
 				}
-			}
+			})
 
 			i++
 			if i > 1 {
@@ -97,21 +97,21 @@ func main() {
 				time.Sleep(time.Second)
 				continue
 			}
-			if p.dark {
-				if p.asleep {
-					if i == 1 {
-						pix = sleepDark1
+			fyne.Do(func() {
+				if p.dark {
+					if p.asleep {
+						if i == 1 {
+							u.scr.setPixels(sleepDark1)
+						} else {
+							u.scr.setPixels(sleepDark2)
+						}
 					} else {
-						pix = sleepDark2
+						u.scr.setPixels(frameBlack)
 					}
 				} else {
-					pix = frameBlack
+					u.scr.setPixels(u.homePix)
 				}
-			} else {
-				pix = homePix
-			}
-
-			fyne.Do(scr.Refresh)
+			})
 			time.Sleep(time.Second)
 		}
 	}()

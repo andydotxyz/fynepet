@@ -3,7 +3,6 @@ package main
 import (
 	_ "embed"
 	"log"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -41,11 +40,14 @@ type ui struct {
 	hold       bool
 
 	p   *pet
-	scr *canvas.Raster
+	scr *screen
+
+	homePix [16]int64
 }
 
-func newUI(p *pet, s *canvas.Raster) *ui {
-	u := &ui{p: p, scr: s}
+func newUI(p *pet) *ui {
+	u := &ui{p: p, scr: newScreen()}
+
 	u.modes = []fyne.CanvasObject{
 		u.newIcon("feed", picFeed),
 		u.newIcon("light", picLight),
@@ -64,8 +66,7 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			u.p.mode = modeHome
 		} else {
 			menuChoice = 0
-			pix = homePix
-			u.scr.Refresh()
+			u.scr.setPixels(u.homePix)
 		}
 		u.refresh()
 	}
@@ -79,37 +80,35 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			case modeFeed:
 				if menuChoice == 1 {
 					menuChoice = 2
-					pix = feedMenu2
+					u.scr.setPixels(feedMenu2)
 				} else {
 					menuChoice = 1
-					pix = feedMenu1
+					u.scr.setPixels(feedMenu1)
 				}
 			case modeLight:
 				if menuChoice == 1 {
 					menuChoice = 2
-					pix = lightMenuOff
+					u.scr.setPixels(lightMenuOff)
 				} else {
 					menuChoice = 1
-					pix = lightMenuOn
+					u.scr.setPixels(lightMenuOn)
 				}
 			case modeStats:
 				if menuChoice == 1 {
 					menuChoice = 2
-					pix = statsMenuDiscipline
+					u.scr.setPixels(statsMenuDiscipline)
 				} else if menuChoice == 2 {
 					menuChoice = 3
-					pix = statsMenuHungry
+					u.scr.setPixels(statsMenuHungry)
 				} else if menuChoice == 3 {
 					menuChoice = 4
-					pix = statsMenuHappy
+					u.scr.setPixels(statsMenuHappy)
 				} else {
 					menuChoice = 1
-					pix = statsMenuHome
+					u.scr.setPixels(statsMenuHome)
 				}
 
 			}
-			u.scr.Refresh()
-
 			return
 		}
 		p.mode++
@@ -136,15 +135,13 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 				return
 			}
 
-			pix = feedMenu1
+			u.scr.setPixels(feedMenu1)
 			menuChoice = 1
-			u.scr.Refresh()
 		case modeLight:
 			if menuChoice > 0 {
 				u.p.dark = menuChoice != 1
 				if !u.p.dark {
-					pix = homePix
-					u.scr.Refresh()
+					u.scr.setPixels(u.homePix)
 				}
 
 				cancel()
@@ -152,17 +149,16 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 			}
 
 			if u.p.dark {
-				pix = lightMenuOff
+				u.scr.setPixels(lightMenuOff)
 				menuChoice = 2
 			} else {
-				pix = lightMenuOn
+				u.scr.setPixels(lightMenuOn)
 				menuChoice = 1
 			}
-			u.scr.Refresh()
 		case modeClean:
 			u.hold = true
 			go func() {
-				u.cleanAnimation()
+				u.scr.cleanAnimation()
 				u.p.dirty = false
 				u.p.alert = false
 				u.hold = false
@@ -174,9 +170,8 @@ func newUI(p *pet, s *canvas.Raster) *ui {
 				return
 			}
 
-			pix = statsMenuHome
+			u.scr.setPixels(statsMenuHome)
 			menuChoice = 1
-			u.scr.Refresh()
 		case modeDiscipline:
 			if p.alert {
 				p.alert = false
@@ -231,51 +226,5 @@ func (u *ui) refresh() {
 			continue
 		}
 		m.Hide()
-	}
-}
-
-func (u *ui) cleanAnimation() {
-	i := 0
-	for i < 36 {
-		time.Sleep(time.Millisecond * 50)
-
-		if i < 32 { // last 4 frames are a small freeze on the device
-			for id, row := range pix {
-				pix[id] = row << 1
-
-				switch i % 32 {
-				case 0:
-					if id%4 == 2 {
-						pix[id] |= 0x1
-					}
-				case 1:
-					if id%4 != 0 {
-						pix[id] |= 0x1
-					}
-				case 2:
-					if id%4 != 2 {
-						pix[id] |= 0x1
-					}
-				case 3:
-					if id%2 == 0 {
-						pix[id] |= 0x1
-					}
-				case 4:
-					if id%2 == 1 {
-						pix[id] |= 0x1
-					}
-				case 5:
-					if id%4 == 0 {
-						pix[id] |= 0x1
-					}
-
-				default:
-					// no more pixels
-				}
-			}
-		}
-		i++
-
-		fyne.Do(u.scr.Refresh)
 	}
 }
