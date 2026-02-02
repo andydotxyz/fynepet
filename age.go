@@ -22,18 +22,17 @@ const (
 	ageIota petAge = 0.006
 )
 
-var (
-	ageFrame1 = frameEggDown
-	ageFrame2 = frameEggUp
-)
+var ageFrames = map[int][2][16]int64{
+	int(ageEgg):  {frameEggDown, frameEggUp},
+	int(ageBaby): {frameBaby1, frameBaby2},
+	int(ageDead): {frameDead1, frameDead2},
+}
 
 func (p *pet) runAging(u *ui) {
 	if p.age < 1 {
 		p.tickUntil(ageIota * 5)
 		p.age = 1
 	}
-	ageFrame1 = frameBaby1
-	ageFrame2 = frameBaby2
 
 	go func() {
 		for { // TODO remove this for real lifecycle
@@ -59,8 +58,6 @@ func (p *pet) runAging(u *ui) {
 		p.age = ageDead // dead
 		p.pref.SetFloat(keyAge, float64(p.age))
 	}
-	ageFrame1 = frameDead1
-	ageFrame2 = frameDead2
 	// TODO dead stats page
 }
 

@@ -75,11 +75,7 @@ func main() {
 					homePix = sleepLight2
 				}
 			} else {
-				if i == 1 {
-					homePix = ageFrame1
-				} else {
-					homePix = ageFrame2
-				}
+				homePix = ageFrames[int(p.age)][i]
 			}
 
 			if p.dirty {
