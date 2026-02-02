@@ -198,7 +198,7 @@ func (u *ui) alert() {
 	u.p.alert = true
 	u.refresh()
 
-	fyne.CurrentApp().SendNotification(fyne.NewNotification("Attention!", "Your pet needs you..."))
+	fyne.CurrentApp().SendNotification(fyne.NewNotification("Fyne Pet is Sad", "Your pet needs you..."))
 }
 
 func (u *ui) newIcon(name string, data []byte) fyne.CanvasObject {

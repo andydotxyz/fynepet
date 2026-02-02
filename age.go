@@ -32,6 +32,8 @@ func (p *pet) runAging(u *ui) {
 	if p.age < 1 {
 		p.tickUntil(ageIota * 5)
 		p.age = 1
+
+		fyne.CurrentApp().SendNotification(fyne.NewNotification("Fyne Pet Hatched", "Your pet is ready to play"))
 	}
 
 	go func() {
@@ -57,6 +59,8 @@ func (p *pet) runAging(u *ui) {
 		p.tickUntil(1.0 + ageIota*30)
 		p.age = ageDead // dead
 		p.pref.SetFloat(keyAge, float64(p.age))
+
+		fyne.CurrentApp().SendNotification(fyne.NewNotification("Fyne Pet Died", "Better luck next time :("))
 	}
 	// TODO dead stats page
 }
