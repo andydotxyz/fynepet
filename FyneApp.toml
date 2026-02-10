@@ -1,0 +1,10 @@
+[Details]
+Icon = "Icon.png"
+Name = "FynePet"
+ID = "xyz.andy.fynepet"
+Version = "0.2.0"
+Build = 30
+
+[AdaptiveIcon]
+Foreground = "assets/Icon-foreground.png"
+Monochrome = "assets/Icon-monochrome.png"
