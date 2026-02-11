@@ -1,6 +1,8 @@
+Description = "A tamagotchi style pet created with Go and Fyne"
+
 [Details]
 Icon = "Icon.png"
-Name = "FynePet"
+Name = "Fyne Pet"
 ID = "xyz.andy.fynepet"
 Version = "0.2.0"
 Build = 30
@@ -8,3 +10,6 @@ Build = 30
 [AdaptiveIcon]
 Foreground = "assets/Icon-foreground.png"
 Monochrome = "assets/Icon-monochrome.png"
+
+[Migrations]
+fyneDo = true
