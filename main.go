@@ -65,7 +65,7 @@ func main() {
 	go func() {
 		i := 0
 		for {
-			p.asleep = time.Now().Hour() < 9 || time.Now().Hour() > 21
+			p.asleep = time.Now().Hour() < 9 || time.Now().Hour() >= 21
 			fyne.Do(func() {
 				if p.asleep {
 					if i == 1 {
