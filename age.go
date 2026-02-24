@@ -37,7 +37,7 @@ func (p *pet) runAging(u *ui) {
 	}
 
 	go func() {
-		for { // TODO remove this for real lifecycle
+		for {
 			delay := rand.IntN(15 * 60)
 			time.Sleep(time.Second * time.Duration(delay))
 			if p.age < ageBaby || p.age >= ageDead {
@@ -51,6 +51,26 @@ func (p *pet) runAging(u *ui) {
 				}
 
 				u.alert()
+			})
+		}
+	}()
+
+	// Hunger increases over time
+	go func() {
+		for {
+			time.Sleep(time.Minute * time.Duration(5+rand.IntN(10)))
+			if p.age < ageBaby || p.age >= ageDead {
+				continue
+			}
+
+			fyne.Do(func() {
+				if p.hungry < maxStat {
+					p.hungry++
+					p.pref.SetInt(keyHungry, p.hungry)
+				}
+				if p.hungry >= maxStat && !p.alert {
+					u.alert()
+				}
 			})
 		}
 	}()

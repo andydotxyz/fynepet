@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "embed"
-	"log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -128,11 +127,15 @@ func newUI(p *pet) *ui {
 		switch u.p.mode {
 		case modeFeed:
 			if menuChoice > 0 {
-				if menuChoice == 1 {
-					log.Println("TODO feed burger")
-				} else {
-					log.Println("TODO feed cake")
-				}
+				isMeal := menuChoice == 1
+				u.hold = true
+				go func() {
+					u.feedAnimation(isMeal)
+					fyne.Do(func() {
+						u.p.feed(isMeal)
+						cancel()
+					})
+				}()
 
 				return
 			}
