@@ -38,7 +38,55 @@ var (
 
 	waste1 = fynepet.Pixels{0, 0, 0, 0, 0, 0, 0, 0, 1, 66, 129, 80, 24, 52, 122, 126}
 	waste2 = fynepet.Pixels{0, 0, 0, 0, 0, 0, 0, 0, 128, 66, 129, 18, 24, 52, 94, 126}
+
+	// Food item on the left side of screen (burger-like shape)
+	feedBurger = fynepet.Pixels{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1006632960, 2080374784, 2080374784, 1006632960, 0}
+	// Food item on the left side of screen (cake-like shape)
+	feedCake = fynepet.Pixels{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 134217728, 939524096, 2080374784, 2080374784, 2080374784, 0}
+
+	// Pet eating frames (mouth open/closed)
+	feedEat1 = fynepet.Pixels{0, 0, 0, 0, 0, 0, 0, 0, 245760, 270336, 544768, 659456, 528384, 659456, 528384, 516096}
+	feedEat2 = fynepet.Pixels{0, 0, 0, 0, 0, 0, 0, 0, 245760, 270336, 544768, 659456, 528384, 528384, 528384, 516096}
 )
+
+func (u *ui) feedAnimation(isMeal bool) {
+	food := feedCake
+	if isMeal {
+		food = feedBurger
+	}
+
+	// Show food approaching from the left (shift food right over 8 frames)
+	for i := 0; i < 8; i++ {
+		time.Sleep(time.Millisecond * 100)
+		shift := 7 - i
+		fyne.Do(func() {
+			var frame fynepet.Pixels
+			for row := 0; row < 16; row++ {
+				frame[row] = food[row] >> shift
+			}
+			// Overlay pet on the right side
+			for row := 0; row < 16; row++ {
+				frame[row] |= frameBaby1[row]
+			}
+			u.scr.SetPixels(frame)
+		})
+	}
+
+	// Eating animation: alternate mouth open/closed 3 times
+	for i := 0; i < 6; i++ {
+		time.Sleep(time.Millisecond * 150)
+		frame := feedEat1
+		if i%2 == 1 {
+			frame = feedEat2
+		}
+		fyne.Do(func() {
+			u.scr.SetPixels(frame)
+		})
+	}
+
+	// Brief pause after eating
+	time.Sleep(time.Millisecond * 200)
+}
 
 func (u *ui) cleanAnimation() {
 	i := 0
